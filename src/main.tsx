@@ -19,6 +19,7 @@ const Bunny2 = lazy(() => import('./components/Bunny2.tsx'));
 const Bunny3 = lazy(() => import('./components/Bunny3.tsx'));;
 const Bunny4 = LazyWithRetries(() => import('./components/Bunny4.tsx'), ErrorFallback);
 const Bunny5 = LazyWithRefresh(() => import('./components/Bunny5.tsx'), ErrorFallback, { forceRefreshOnFailure: {forceRefresh: true, sessionCacheKey: 'bunny5'} });
+const Bunny6 = LazyWithRefresh(() => import('./components/Bunny6.tsx'), ErrorFallback, { forceRefreshOnFailure: {forceRefresh: true, sessionCacheKey: 'bunny6'} });
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -30,6 +31,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="lazy-loaded-with-error-boundary" element={<WithErrorBoundary><Suspense fallback={<CircularIndeterminate />} ><Bunny3 /></Suspense></WithErrorBoundary>} />
           <Route path="lazy-loaded-with-retries" element={<Bunny4 />} />
           <Route path="lazy-loaded-with-refresh" element={<Bunny5 />} />
+          <Route path="lazy-loaded-prefetch" element={<Bunny6 />} />
           <Route path="*" element={<div>Not Found</div>} />
           <Route index element={<Bunny1 />} />
         </Route>

@@ -10,6 +10,7 @@ const mapIndexToRoute: Record<number, string> = {
   2: '/lazy-loaded-with-error-boundary',
   3: '/lazy-loaded-with-retries',
   4: '/lazy-loaded-with-refresh',
+  5: '/lazy-loaded-prefetch',
 };
 
 const mapRouteToIndex: Record<string, number> = {
@@ -18,6 +19,7 @@ const mapRouteToIndex: Record<string, number> = {
   '/lazy-loaded-with-error-boundary': 2,
   '/lazy-loaded-with-retries': 3,
   '/lazy-loaded-with-refresh': 4,
+  '/lazy-loaded-prefetch': 5,
 };
 
 const App = () => {
@@ -40,6 +42,10 @@ const App = () => {
     navigate(`${mapIndexToRoute[newValue]}`);
   }, [navigate]);
 
+  const prefetchBunny = useCallback(() => {
+    import('./components/Bunny6.tsx');
+  }, []);
+
   return (
     <>
       <h1>Lazy loading techniques demo</h1>
@@ -51,6 +57,7 @@ const App = () => {
             <Tab label="Lazy Loaded With Error Boundary" />
             <Tab label="Lazy Loaded With Retries" />
             <Tab label="Lazy Loaded With Refresh" />
+            <Tab label="Pre Fetch" onMouseEnter={prefetchBunny}/>
           </Tabs>
         </Box>
           <Outlet/>
