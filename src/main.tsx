@@ -29,9 +29,9 @@ createRoot(document.getElementById('root')!).render(
           <Route path="bundled" element={<Bunny1 />} />
           <Route path="lazy-loaded" element={<Suspense fallback={<CircularIndeterminate />} ><Bunny2 /></Suspense>} />
           <Route path="lazy-loaded-with-error-boundary" element={<WithErrorBoundary><Suspense fallback={<CircularIndeterminate />} ><Bunny3 /></Suspense></WithErrorBoundary>} />
-          <Route path="lazy-loaded-with-retries" element={<Bunny4 />} />
-          <Route path="lazy-loaded-with-refresh" element={<Bunny5 />} />
-          <Route path="lazy-loaded-prefetch" element={<Bunny6 />} />
+          <Route path="lazy-loaded-with-retries" element={<Suspense fallback={<CircularIndeterminate />} ><Bunny4 /></Suspense>} />
+          <Route path="lazy-loaded-with-refresh" element={<Suspense fallback={<CircularIndeterminate />} ><Bunny5 /></Suspense>} />
+          <Route path="lazy-loaded-prefetch" element={<Suspense fallback={<CircularIndeterminate />} ><Bunny6 /></Suspense>} />
           <Route path="*" element={<div>Not Found</div>} />
           <Route index element={<Bunny1 />} />
         </Route>
