@@ -18,6 +18,11 @@ export default defineConfig([
   tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
   pluginReact.configs.flat['jsx-runtime'], // Add this if you are using React 17+
-  globalIgnores(['coverage', 'public', 'dist', 'pnpm-lock.yaml']),
+  globalIgnores([
+    'coverage',
+    'public',
+    'dist',
+    'pnpm-lock.yaml, commitlint.config.js',
+  ]),
   eslintPluginPrettierRecommended,
 ]);
