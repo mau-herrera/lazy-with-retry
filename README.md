@@ -1,54 +1,92 @@
-# React + TypeScript + Vite
+# Lazy with Retry
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+`lazy-with-retry` is a utility library designed to enhance the React `lazy` function by adding retry and fallback mechanisms. It is particularly useful for dynamically importing components in React applications where network issues or other failures might prevent a component from loading successfully. This library ensures a better user experience by providing retries, fallback components, and even page refreshes as a last resort.
 
-Currently, two official plugins are available:
+## Why Use `lazy-with-retry`?
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Dynamic imports in React can fail due to various reasons, such as network instability or server issues. By default, React's `lazy` function does not provide a way to handle these failures gracefully. `lazy-with-retry` solves this problem by:
 
-## Expanding the ESLint configuration
+- Allowing multiple retries with customizable intervals.
+- Providing a fallback component to display when retries fail.
+- Optionally refreshing the page to attempt recovery.
+- Offering hooks for custom error handling and retry logic.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Installation
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
+```bash
+npm install lazy-with-retry
+```
+
+## Parameters
+
+The `lazyWithRetry` function accepts the following parameters:
+
+| Parameter               | Type                                                 | Description                                                                     |
+| ----------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `importFunction`        | `() => Promise<{ default: ComponentType<unknown> }>` | The function to dynamically import the component.                               |
+| `failFallbackComponent` | `ComponentType<unknown>`                             | A fallback component to display if retries fail. Default is an empty component. |
+| `options`               | `TLazyRetryOptions`                                  | Configuration options for retries, refreshes, and error handling.               |
+
+### `TLazyRetryOptions`
+
+| Option                  | Type                                          | Description                                             |
+| ----------------------- | --------------------------------------------- | ------------------------------------------------------- |
+| `retries`               | `number`                                      | Number of retry attempts. Default is `3`.               |
+| `interval`              | `number`                                      | Time in milliseconds between retries. Default is `500`. |
+| `forceRefreshOnFailure` | `TForceRefreshProps`                          | Configuration for forcing a page refresh on failure.    |
+| `onRefresh`             | `(error: Error, refreshLeft: number) => void` | Callback for when a refresh is attempted.               |
+| `onRetry`               | `(error: Error, retriesLeft: number) => void` | Callback for when a retry is attempted.                 |
+| `onFailure`             | `(error: Error) => void`                      | Callback for when all retries fail.                     |
+
+### `TForceRefreshProps`
+
+| Option            | Type     | Description                                                             |
+| ----------------- | -------- | ----------------------------------------------------------------------- |
+| `refreshRetries`  | `number` | Number of page refresh attempts. Default is `0`.                        |
+| `cacheKeyPrefix`  | `string` | Prefix for session storage keys. Default is `'retry-lazy-refresh-for'`. |
+| `sessionCacheKey` | `string` | Unique key for session storage to prevent infinite refresh loops.       |
+
+## Usage
+
+Here is an example of how to use `lazy-with-retry`:
+
+```tsx
+import React from 'react';
+import lazyWithRetry from './utils/lazy-with-retry';
+import FallbackComponent from './components/fallback-component';
+
+const HelloWorld = lazyWithRetry(
+  () => import('./components/hello-world'),
+  FallbackComponent,
+  {
+    retries: 3,
+    interval: 1000,
+    forceRefreshOnFailure: {
+      forceRefresh: true,
+      refreshRetries: 2,
+      sessionCacheKey: 'hello-world-refresh',
+    },
+    onRetry: (error, retriesLeft) => {
+      console.error(`Retrying... ${retriesLeft} retries left`, error);
+    },
+    onRefresh: (error, refreshLeft) => {
+      console.warn(`Refreshing... ${refreshLeft} refreshes left`, error);
+    },
+    onFailure: (error) => {
+      console.error('Failed to load component', error);
     },
   },
-})
+);
+
+const App = () => (
+  <React.Suspense fallback={<div>Loading...</div>}>
+    <HelloWorld />
+  </React.Suspense>
+);
+
+export default App;
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## License
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
