@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react-swc';
 import { resolve } from 'path';
 import dts from 'vite-plugin-dts';
@@ -27,4 +27,15 @@ export default defineConfig({
       include: ['lib'],
     }),
   ],
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './vitest.setup.ts',
+    include: ['lib/**/*.test.ts', 'lib/**/*.test.tsx'],
+    coverage: {
+      provider: 'v8',
+      include: ['lib/**/*.{ts,tsx}'],
+      reporter: ['text', 'html', 'json'],
+    },
+  },
 });

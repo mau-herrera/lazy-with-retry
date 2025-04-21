@@ -23,24 +23,24 @@ npm install lazy-with-retry
 
 The `lazyWithRetry` function accepts the following parameters:
 
-| Parameter               | Type                                                 | Description                                                                     |
-| ----------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------- |
-| `importFunction`        | `() => Promise<{ default: ComponentType<unknown> }>` | The function to dynamically import the component.                               |
-| `failFallbackComponent` | `ComponentType<unknown>`                             | A fallback component to display if retries fail. Default is an empty component. |
-| `options`               | `TLazyRetryOptions`                                  | Configuration options for retries, refreshes, and error handling.               |
+| Parameter        | Type                                                 | Description                                                       |
+| ---------------- | ---------------------------------------------------- | ----------------------------------------------------------------- |
+| `importFunction` | `() => Promise<{ default: ComponentType<unknown> }>` | The function to dynamically import the component.                 |
+| `options`        | `TLazyRetryOptions`                                  | Configuration options for retries, refreshes, and error handling. |
 
 ### `TLazyRetryOptions`
 
-| Option                  | Type                                          | Description                                             |
-| ----------------------- | --------------------------------------------- | ------------------------------------------------------- |
-| `retries`               | `number`                                      | Number of retry attempts. Default is `3`.               |
-| `interval`              | `number`                                      | Time in milliseconds between retries. Default is `500`. |
-| `forceRefreshOnFailure` | `TForceRefreshProps`                          | Configuration for forcing a page refresh on failure.    |
-| `onRefresh`             | `(error: Error, refreshLeft: number) => void` | Callback for when a refresh is attempted.               |
-| `onRetry`               | `(error: Error, retriesLeft: number) => void` | Callback for when a retry is attempted.                 |
-| `onFailure`             | `(error: Error) => void`                      | Callback for when all retries fail.                     |
+| Option                  | Type                                          | Description                                                                     |
+| ----------------------- | --------------------------------------------- | ------------------------------------------------------------------------------- |
+| `failFallbackComponent` | `ComponentType<unknown>`                      | A fallback component to display if retries fail. Default is an empty component. |
+| `retries`               | `number`                                      | Number of retry attempts. Default is `2`.                                       |
+| `interval`              | `number`                                      | Time in milliseconds between retries. Default is `500`.                         |
+| `forceRefreshOptions`   | `TForceRefreshOptions`                        | Configuration for forcing a page refresh on failure.                            |
+| `onRefresh`             | `(error: Error, refreshLeft: number) => void` | Callback for when a refresh is attempted.                                       |
+| `onRetry`               | `(error: Error, retriesLeft: number) => void` | Callback for when a retry is attempted.                                         |
+| `onFailure`             | `(error: Error) => void`                      | Callback for when all retries fail.                                             |
 
-### `TForceRefreshProps`
+### `TForceRefreshOptions`
 
 | Option            | Type     | Description                                                             |
 | ----------------- | -------- | ----------------------------------------------------------------------- |
@@ -54,7 +54,7 @@ Here is an example of how to use `lazy-with-retry`:
 
 ```tsx
 import React from 'react';
-import lazyWithRetry from './utils/lazy-with-retry';
+import { lazyWithRetry } from 'lazy-with-retry';
 import FallbackComponent from './components/fallback-component';
 
 const HelloWorld = lazyWithRetry(

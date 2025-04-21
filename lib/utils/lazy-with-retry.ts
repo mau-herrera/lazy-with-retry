@@ -15,6 +15,9 @@ export type TForceRefreshOptions = {
 };
 
 export type TLazyRetryOptions = {
+  // This is the fallback component to be used if the lazy load fails
+  failFallbackComponent?: ComponentType<unknown>;
+
   // Number of times to retry loading the component before trying to refresh or falling back to the fallback component
   retries?: number;
 
@@ -96,16 +99,28 @@ const retryFunction = (
             return;
           }
           // Passing on "reject" is the important part
-          const bustedCacheUrl = new URL(
-            error.message
-              .replace('Failed to fetch dynamically imported module: ', '')
-              .trim(),
-          );
-          bustedCacheUrl.searchParams.set('t', `${+new Date()}`);
+          // Ensure the error message is a valid URL before constructing a new URL
+          let bustedCacheUrl: URL | undefined;
+          try {
+            bustedCacheUrl = new URL(
+              error.message
+                .replace('Failed to fetch dynamically imported module: ', '')
+                .trim(),
+            );
+          } catch {
+            // If the error message is not a valid URL, we can't bust the cache
+            // and we need to retry the function instead
+            bustedCacheUrl = undefined;
+          }
+          if (bustedCacheUrl) {
+            bustedCacheUrl.searchParams.set('t', `${+new Date()}`);
+          }
           // Notify the user that we are retrying
           onRetry?.(error, retriesLeft - 1);
           retryFunction(
-            () => import(/* @vite-ignore */ bustedCacheUrl.href),
+            bustedCacheUrl
+              ? () => import(/* @vite-ignore */ bustedCacheUrl.href)
+              : fn,
             retriesLeft - 1,
             interval,
             failFallbackComponent,
@@ -120,15 +135,16 @@ const retryFunction = (
 
 const lazyWithRetry = (
   importFunction: () => Promise<{ default: ComponentType<unknown> }>,
-  failFallbackComponent: ComponentType<unknown> = () => null,
   options?: TLazyRetryOptions,
 ) =>
   lazy(() =>
     retryFunction(
       importFunction,
-      options?.retries || DEFAULT_RETRY_COUNT,
+      options?.retries !== undefined && options.retries >= 0
+        ? options.retries
+        : DEFAULT_RETRY_COUNT,
       options?.interval || DEFAULT_INTERVAL,
-      failFallbackComponent,
+      options?.failFallbackComponent || (() => null),
       options?.forceRefreshOptions,
       options?.onRefresh,
       options?.onRetry,

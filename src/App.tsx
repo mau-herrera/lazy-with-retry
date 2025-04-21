@@ -7,8 +7,8 @@ const HelloWorld = lazy(
     import('./components/hello-world') as Promise<{
       default: React.ComponentType<unknown>;
     }>,
-  FallbackComponent,
   {
+    failFallbackComponent: FallbackComponent,
     retries: 5,
     interval: 1000,
     forceRefreshOptions: {
@@ -16,13 +16,13 @@ const HelloWorld = lazy(
       cacheKeyPrefix: 'demo-app',
       refreshRetries: 2,
     },
-    onRefresh: (_error, refreshLeft) => {
+    onRefresh: (_error: Error, refreshLeft: number) => {
       console.log(`Refreshing... ${refreshLeft} left`);
     },
-    onRetry: (_error, retriesLeft) => {
+    onRetry: (_error: Error, retriesLeft: number) => {
       console.log(`Retrying... ${retriesLeft} left`);
     },
-    onFailure: (error) => {
+    onFailure: (error: Error) => {
       console.error('Failed to load component:', error);
     },
   },
