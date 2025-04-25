@@ -1,0 +1,47 @@
+name: Release
+
+on:
+  push:
+    branches: [main, beta]
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+      - name: Install dependencies
+        run: pnpm install
+      - name: Install semantic-release extra plugins
+        run: pnpm install --save-dev @semantic-release/changelog @semantic-release/git
+      - name: Lint
+        run: pnpm lint:fix
+      - name: Test
+        run: pnpm test:coverage
+      - name: Code Coverage Report
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: coverage/**/coverage.cobertura.xml
+          badge: true
+          fail_below_min: true
+          format: markdown
+          hide_branch_rate: false
+          hide_complexity: true
+          indicators: true
+          output: both
+          thresholds: '60 80'
+      - name: Build
+        run: pnpm build
+      - name: Generate changelog
+        run: pnpx conventional-changelog -p angular -i CHANGELOG.md -s
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npx semantic-release
