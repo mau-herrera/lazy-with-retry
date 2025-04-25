@@ -35,7 +35,7 @@ jobs:
       - name: Build
         run: pnpm build
       - name: Generate changelog
-        run: pnpx conventional-changelog -p angular -i CHANGELOG.md -s
+        run: npx conventional-changelog -p angular -i CHANGELOG.md -s
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
