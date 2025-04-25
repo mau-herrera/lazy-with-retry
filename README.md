@@ -57,28 +57,25 @@ import React from 'react';
 import { lazyWithRetry } from 'lazy-with-retry';
 import FallbackComponent from './components/fallback-component';
 
-const HelloWorld = lazyWithRetry(
-  () => import('./components/hello-world'),
-  FallbackComponent,
-  {
-    retries: 3,
-    interval: 1000,
-    forceRefreshOnFailure: {
-      forceRefresh: true,
-      refreshRetries: 2,
-      sessionCacheKey: 'hello-world-refresh',
-    },
-    onRetry: (error, retriesLeft) => {
-      console.error(`Retrying... ${retriesLeft} retries left`, error);
-    },
-    onRefresh: (error, refreshLeft) => {
-      console.warn(`Refreshing... ${refreshLeft} refreshes left`, error);
-    },
-    onFailure: (error) => {
-      console.error('Failed to load component', error);
-    },
+const HelloWorld = lazyWithRetry(() => import('./components/hello-world'), {
+  failFallbackComponent: FallbackComponent,
+  retries: 3,
+  interval: 1000,
+  forceRefreshOnFailure: {
+    forceRefresh: true,
+    refreshRetries: 2,
+    sessionCacheKey: 'hello-world-refresh',
   },
-);
+  onRetry: (error, retriesLeft) => {
+    console.error(`Retrying... ${retriesLeft} retries left`, error);
+  },
+  onRefresh: (error, refreshLeft) => {
+    console.warn(`Refreshing... ${refreshLeft} refreshes left`, error);
+  },
+  onFailure: (error) => {
+    console.error('Failed to load component', error);
+  },
+});
 
 const App = () => (
   <React.Suspense fallback={<div>Loading...</div>}>

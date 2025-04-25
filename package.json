@@ -1,7 +1,7 @@
 {
   "name": "lazy-with-retry",
   "private": false,
-  "version": "2.0.0",
+  "version": "2.0.1",
   "type": "module",
   "description": "A react library that provides a lazy loading component with retry, refresh and fallback functionality.",
   "author": {
