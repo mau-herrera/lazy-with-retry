@@ -22,7 +22,9 @@ export default defineConfig([
     'coverage',
     'public',
     'dist',
-    'pnpm-lock.yaml, commitlint.config.js',
+    'pnpm-lock.yaml',
+    'commitlint.config.js',
+    'release.config.js',
   ]),
   eslintPluginPrettierRecommended,
 ]);
