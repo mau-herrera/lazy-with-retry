@@ -1,6 +1,7 @@
 # Lazy with Retry
 
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 `lazy-with-retry` is a utility library designed to enhance the React `lazy` function by adding retry and fallback mechanisms. It is particularly useful for dynamically importing components in React applications where network issues or other failures might prevent a component from loading successfully. This library ensures a better user experience by providing retries, fallback components, and even page refreshes as a last resort.
 
