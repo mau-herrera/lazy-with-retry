@@ -24,7 +24,7 @@ export default defineConfig([
     'dist',
     'pnpm-lock.yaml',
     'commitlint.config.js',
-    'release.config.js',
+    '.releaserc',
   ]),
   eslintPluginPrettierRecommended,
 ]);
