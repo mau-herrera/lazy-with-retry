@@ -103,6 +103,10 @@ versions on patched releases within their existing major versions.
 Coverage comments run in a separate, write-scoped job for same-repository pull
 requests; fork pull requests retain read-only builds and the job summary.
 
+Releases from `main` and `beta` publish to npm and GitHub without pushing commits
+to protected branches. Version and changelog updates stay in the release workspace;
+published release notes are available on GitHub Releases.
+
 `pnpm audit` still reports advisories for the changelog Git client's `getTags()`
 arguments and Minimatch/Picomatch glob patterns. These tools currently use
 repository-controlled arguments and patterns, not external input; the vulnerable
