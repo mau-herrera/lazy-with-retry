@@ -4,6 +4,9 @@ on:
   pull_request:
     branches: [main, beta]
 
+permissions:
+  contents: read
+
 jobs:
   build:
     name: CI Build
@@ -13,11 +16,11 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Node.js
         uses: actions/setup-node@v4
-      - uses: pnpm/action-setup@v4
         with:
-          node-version: 20.x
+          node-version: 24.x
+      - uses: pnpm/action-setup@v4
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
       - name: Lint
         run: pnpm lint:fix
       - name: Test
@@ -38,11 +41,31 @@ jobs:
         run: pnpm build
       - name: Generate changelog
         run: npx conventional-changelog -p angular -i CHANGELOG.md -s
+      - name: Upload Coverage Summary
+        uses: actions/upload-artifact@v4
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        with:
+          name: coverage-summary
+          path: code-coverage-results.md
+          if-no-files-found: error
+      - name: Write to Job Summary
+        run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
+
+  coverage-comment:
+    name: Comment Coverage
+    needs: build
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Download Coverage Summary
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-summary
       - name: Add Coverage PR Comment
         uses: marocchino/sticky-pull-request-comment@v2
-        if: github.event_name == 'pull_request'
         with:
           recreate: true
           path: code-coverage-results.md
-      - name: Write to Job Summary
-        run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY

@@ -87,6 +87,28 @@ const App = () => (
 export default App;
 ```
 
+## Development
+
+Use Node.js 24 and the pnpm version pinned in `package.json`.
+
+```bash
+pnpm install --frozen-lockfile
+pnpm test:coverage
+pnpm build
+pnpm audit
+```
+
+The dependency overrides keep pinned transitive AJV, Lodash, and Minimatch
+versions on patched releases within their existing major versions.
+Coverage comments run in a separate, write-scoped job for same-repository pull
+requests; fork pull requests retain read-only builds and the job summary.
+
+`pnpm audit` still reports advisories for the changelog Git client's `getTags()`
+arguments and Minimatch/Picomatch glob patterns. These tools currently use
+repository-controlled arguments and patterns, not external input; the vulnerable
+`getTags()` call is not used. Picomatch has no patched release available. These
+advisories are not suppressed and must be reassessed if tooling inputs change.
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.

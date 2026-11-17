@@ -2,7 +2,11 @@ import lazyWithRetry from './lazy-with-retry';
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { Suspense } from 'react';
-import { error } from 'console';
+
+vi.mock('./bust-cache-and-retry', () => ({
+  default: vi.fn(),
+}));
+
 describe('lazyWithRetry', () => {
   beforeEach(() => {
     Object.defineProperty(window, 'location', {
@@ -112,10 +116,6 @@ describe('lazyWithRetry', () => {
       .mockRejectedValueOnce(new Error('Failed'))
       .mockRejectedValueOnce(new Error('Failed again'));
 
-    vi.mock('./bust-cache-and-retry', () => ({
-      default: vi.fn(),
-    }));
-
     const onRefresh = vi.fn();
     const forceRefreshOptions = {
       refreshRetries: 1,
@@ -135,10 +135,8 @@ describe('lazyWithRetry', () => {
       </Suspense>,
     );
     await vi.waitFor(() => {
-      if (onRefresh.mock.calls.length <= 0)
-        throw error('waiting for refresh to be called');
+      expect(onRefresh).toHaveBeenCalledTimes(1);
     });
-    console.log(onRefresh.mock.calls.length);
     expect(onRefresh).toHaveBeenCalledTimes(1);
     expect(window.sessionStorage.setItem).toHaveBeenCalledWith(
       'retry-lazy-refresh-for-test-key',
